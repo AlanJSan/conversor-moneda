@@ -1,4 +1,4 @@
-package conversor;
+package com.conversor;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -13,10 +13,10 @@ public class ConversorMoneda implements Conversor{
 	
 
 	@Override
-	public String convertir(String valorOrigen, String valorDestino, double cantidad) {
+	public String convertir(String monedaOrigen, String monedaDestino, double cantidad) {
 		// TODO Auto-generated method stub
 		return new DecimalFormat("#.00")
-				.format(cantidad * Moneda.valueOf(valorDestino).getMoneda() / Moneda.valueOf(valorOrigen).getMoneda());
+				.format(cantidad * Moneda.valueOf(monedaDestino).getEquivalencia() / Moneda.valueOf(monedaOrigen).getEquivalencia());
 	}
 
 }

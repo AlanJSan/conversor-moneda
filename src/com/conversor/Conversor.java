@@ -1,4 +1,4 @@
-package conversor;
+package com.conversor;
 
 public interface Conversor {
 	
