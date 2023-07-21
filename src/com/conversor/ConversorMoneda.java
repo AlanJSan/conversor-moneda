@@ -15,7 +15,7 @@ public class ConversorMoneda implements Conversor{
 	@Override
 	public String convertir(String monedaOrigen, String monedaDestino, double cantidad) {
 		// TODO Auto-generated method stub
-		return new DecimalFormat("#.00")
+		return new DecimalFormat("#0.00")
 				.format(cantidad * Moneda.valueOf(monedaDestino).getEquivalencia() / Moneda.valueOf(monedaOrigen).getEquivalencia());
 	}
 
