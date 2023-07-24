@@ -5,72 +5,51 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import java.awt.Color;
 import javax.swing.JComboBox;
-import java.awt.BorderLayout;
 import javax.swing.JTextField;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.MatteBorder;
 
+import com.conversor.Conversor;
 import com.conversor.ConversorMoneda;
+import com.conversor.ConversorTemperatura;
+import com.conversor.ConversorLongitud;
 import com.conversor.Moneda;
-import com.formdev.flatlaf.FlatDarculaLaf;
+import com.conversor.Temperatura;
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatIntelliJLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 
 import java.awt.Cursor;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.awt.Font;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import java.awt.Component;
 import javax.swing.JLabel;
-import java.awt.Window.Type;
 import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.ImageIcon;
+import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.border.LineBorder;
-import javax.swing.JPanel;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
-import java.awt.Point;
-import java.awt.Toolkit;
-import javax.swing.JToolBar;
-import javax.swing.JLayeredPane;
-import javax.swing.JInternalFrame;
-import java.awt.Dimension;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.FlowLayout;
-import java.awt.CardLayout;
-import javax.swing.BoxLayout;
-import java.awt.ComponentOrientation;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class ConversorGui {
 
 	private JFrame frmConversor;
-	private JTextField textMoneda1;
-	private JTextField textMoneda2;
-	private ConversorMoneda cm = new ConversorMoneda();
-	private Moneda[] monedas = Moneda.values();
-	private JLabel labelMoneda2;
+	private JTextField textValor1;
+	private JTextField textValor2;
+	private JComboBox comboValor1;
+	private JComboBox comboValor2;
+	private JLabel labelValor2;
 	private JLabel lblNewLabel;
 	private JPanel panel_1;
-	private JButton btnNewButton;
-	private JButton btnNewButton_1;
-	private JButton btnNewButton_2;
-	private JLabel lblNewLabel_1;
+	private JButton btnMonedas;
+	private JButton btnTemperaturas;
+	private JButton btnLongitudes;
+	private JLabel labelLogo;
+	private JLabel labelValor1;
+    private Conversor<?> conversorActual = new ConversorMoneda();
+
 
 	/**
 	 * Launch the application.
@@ -79,14 +58,11 @@ public class ConversorGui {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					FlatDarkLaf.setup();//FlatIntelliJLaf, FlatDarculaLaf, FlatDarkLaf
-					//FlatLightLaf.setup();
-					UIManager.put( "Component.arc", 10 );
-					UIManager.put( "TextComponent.arc", 10 );
+					FlatDarkLaf.setup();
 					UIManager.put( "Button.arc", 1 );
 					ConversorGui window = new ConversorGui();
 					window.frmConversor.setVisible(true);
-					window.textMoneda1.requestFocus();
+					window.textValor1.requestFocus();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -98,6 +74,7 @@ public class ConversorGui {
 	 * Create the application.
 	 */
 	public ConversorGui() {
+		
 		initialize();
 	}
 
@@ -111,21 +88,19 @@ public class ConversorGui {
 		frmConversor.getContentPane().setBackground(new Color(255, 255, 255));
 		frmConversor.getContentPane().setLayout(null);
 		
-		JLabel labelMoneda1 = new JLabel("");
-		labelMoneda2 = new JLabel("");
-		labelMoneda1.setFont(new Font("Tahoma", Font.PLAIN, 32));
-		labelMoneda1.setBounds(262, 11, 34, 50);
-		JComboBox comboMoneda2 = new JComboBox();
-		JComboBox comboMoneda1 = new JComboBox();
-		textMoneda1 = new JTextField();
-		textMoneda2 = new JTextField();
+		labelValor1 = new JLabel("");
+		labelValor2 = new JLabel("");
+		labelValor1.setFont(new Font("Tahoma", Font.PLAIN, 32));
+		labelValor1.setBounds(190, 45, 34, 50);
+		comboValor2 = new JComboBox();
+		comboValor1 = new JComboBox();
+		textValor1 = new JTextField();
+		textValor2 = new JTextField();
 
-
-				
-		comboMoneda2.addItemListener(new ItemListener() {
+		comboValor2.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				setCurrencySymbol(e, labelMoneda2, comboMoneda2.getSelectedIndex());
-				validateAndConvertCurrency(comboMoneda1, comboMoneda2, textMoneda1, textMoneda2);
+				setCurrencySymbol(e, labelValor2, comboValor2.getSelectedIndex());
+				validateAndConvertValue(comboValor1, comboValor2, textValor1, textValor2);
 			}
 		});
 		
@@ -134,63 +109,59 @@ public class ConversorGui {
 		panel.setLayout(null);
 		
 		
-		comboMoneda1.addItemListener(new ItemListener() {
+		comboValor1.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				setCurrencySymbol(e, labelMoneda1, comboMoneda1.getSelectedIndex());
-				validateAndConvertCurrency(comboMoneda2, comboMoneda1, textMoneda2, textMoneda1);
+				setCurrencySymbol(e, labelValor1, comboValor1.getSelectedIndex());
+				validateAndConvertValue(comboValor2, comboValor1, textValor2, textValor1);
 			}
 		});
-		comboMoneda1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		comboMoneda1.setBounds(273, 84, 181, 22);
+		comboValor1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		comboValor1.setBounds(372, 45, 181, 50);
 		
 		
-		comboMoneda2.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		comboMoneda2.setBounds(273, 285, 181, 22);
-		for (Moneda moneda : monedas) {
-			comboMoneda1.addItem(moneda.descripcion());
-			comboMoneda2.addItem(moneda.descripcion());
-		}
-		comboMoneda2.setSelectedIndex(1);
+		comboValor2.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		comboValor2.setBounds(372, 197, 181, 50);
+		setComboBoxItems();
 		
-		textMoneda1.setFont(new Font("Tahoma", Font.PLAIN, 32));
-		textMoneda1.addKeyListener(new KeyAdapter() {
+		textValor1.setFont(new Font("Tahoma", Font.PLAIN, 32));
+		textValor1.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				validateAndConvertCurrency(comboMoneda1, comboMoneda2, textMoneda1, textMoneda2);	
+				validateAndConvertValue(comboValor1, comboValor2, textValor1, textValor2);	
 			}
 		});
-		textMoneda1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		textMoneda1.setBounds(296, 11, 148, 50);
-		textMoneda1.setColumns(10);
+		textValor1.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
+		textValor1.setBounds(224, 45, 148, 50);
+		textValor1.setColumns(10);
 		
-		textMoneda2.setFont(new Font("Tahoma", Font.PLAIN, 32));
-		textMoneda2.addKeyListener(new KeyAdapter() {
+		textValor2.setFont(new Font("Tahoma", Font.PLAIN, 32));
+		textValor2.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				validateAndConvertCurrency(comboMoneda2, comboMoneda1, textMoneda2, textMoneda1);
+				validateAndConvertValue(comboValor2, comboValor1, textValor2, textValor1);
 			}
 		});
-		textMoneda2.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		textMoneda2.setBounds(306, 212, 148, 50);
-		textMoneda2.setColumns(10);
+		textValor2.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
+		textValor2.setBounds(224, 197, 148, 50);
+		textValor2.setColumns(10);
 		
 		
-		labelMoneda2.setFont(new Font("Tahoma", Font.PLAIN, 32));
-		labelMoneda2.setBounds(273, 212, 34, 50);
+		labelValor2.setFont(new Font("Tahoma", Font.PLAIN, 32));
+		labelValor2.setBounds(190, 197, 34, 50);
 		
-		panel.add(labelMoneda1);
-		panel.add(labelMoneda2);
-		panel.add(textMoneda1);
-		panel.add(textMoneda2);
-		panel.add(comboMoneda1);
-		panel.add(comboMoneda2);
+		panel.add(labelValor1);
+		panel.add(labelValor2);
+		panel.add(textValor1);
+		panel.add(textValor2);
+		panel.add(comboValor1);
+		panel.add(comboValor2);
 
 		frmConversor.getContentPane().add(panel);
 		
 		lblNewLabel = new JLabel("");
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setIcon(new ImageIcon("E:\\JProjects\\conversor\\assets\\transfer-arrows.png"));
-		lblNewLabel.setBounds(325, 133, 70, 50);
+		lblNewLabel.setBounds(325, 118, 70, 50);
 		panel.add(lblNewLabel);
 		
 		panel_1 = new JPanel();
@@ -199,44 +170,69 @@ public class ConversorGui {
 		panel.add(panel_1);
 		panel_1.setLayout(null);
 		
-		btnNewButton = new JButton("Monedas");
-		btnNewButton.setBorderPainted(false);
-		btnNewButton.setMargin(new Insets(2, 5, 2, 0));
-		btnNewButton.setHorizontalAlignment(SwingConstants.LEFT);
-		btnNewButton.setIcon(new ImageIcon("E:\\JProjects\\conversor\\assets\\divisa.png"));
-		btnNewButton.setBounds(0, 0, 123, 50);
-		btnNewButton.setPreferredSize(new Dimension(102, 23));
-		btnNewButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		panel_1.add(btnNewButton);
-		
-		btnNewButton_1 = new JButton("Temperaturas");
-		btnNewButton_1.setBorderPainted(false);
-		btnNewButton_1.setHorizontalAlignment(SwingConstants.LEFT);
-		btnNewButton_1.setIcon(new ImageIcon("E:\\JProjects\\conversor\\assets\\termometro.png"));
-		btnNewButton_1.setMargin(new Insets(2, 5, 2, 0));
-		btnNewButton_1.setBounds(0, 49, 123, 50);
-		btnNewButton_1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		panel_1.add(btnNewButton_1);
-		
-		btnNewButton_2 = new JButton("Longitudes");
-		btnNewButton_2.setBorderPainted(false);
-		btnNewButton_2.setHorizontalAlignment(SwingConstants.LEFT);
-		btnNewButton_2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		btnMonedas = new JButton("Monedas");
+		btnMonedas.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				cambiarConversor(new ConversorMoneda());
+				labelValor1.setVisible(true);
+				labelValor2.setVisible(true);
+				setComboBoxItems();
 			}
 		});
-		btnNewButton_2.setIcon(new ImageIcon("E:\\JProjects\\conversor\\assets\\regla.png"));
-		btnNewButton_2.setMargin(new Insets(2, 5, 2, 0));
-		btnNewButton_2.setBounds(0, 99, 123, 50);
-		btnNewButton_2.setPreferredSize(new Dimension(102, 23));
-		btnNewButton_2.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		panel_1.add(btnNewButton_2);
+		btnMonedas.setBorderPainted(false);
+		btnMonedas.setMargin(new Insets(2, 5, 2, 0));
+		btnMonedas.setHorizontalAlignment(SwingConstants.LEFT);
+		btnMonedas.setIcon(new ImageIcon("E:\\JProjects\\conversor\\assets\\divisa.png"));
+		btnMonedas.setBounds(0, 0, 123, 50);
+		btnMonedas.setPreferredSize(new Dimension(102, 23));
+		btnMonedas.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		panel_1.add(btnMonedas);
 		
-		lblNewLabel_1 = new JLabel("");
-		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel_1.setBounds(15, 180, 80, 96);
-		panel_1.add(lblNewLabel_1);
-		lblNewLabel_1.setIcon(new ImageIcon("E:\\JProjects\\conversor\\assets\\logo-mejorado.png"));
+		btnTemperaturas = new JButton("Temperaturas");
+		btnTemperaturas.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				cambiarConversor(new ConversorTemperatura());
+				setDefaultContent();
+				setComboBoxItems();
+				labelValor1.setVisible(false);
+				labelValor2.setVisible(false);
+			}
+		});
+		btnTemperaturas.setBorderPainted(false);
+		btnTemperaturas.setHorizontalAlignment(SwingConstants.LEFT);
+		btnTemperaturas.setIcon(new ImageIcon("E:\\JProjects\\conversor\\assets\\termometro.png"));
+		btnTemperaturas.setMargin(new Insets(2, 5, 2, 0));
+		btnTemperaturas.setBounds(0, 49, 123, 50);
+		btnTemperaturas.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		panel_1.add(btnTemperaturas);
+		
+		btnLongitudes = new JButton("Longitudes");
+		btnLongitudes.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				cambiarConversor(new ConversorLongitud());
+				setDefaultContent();
+				setComboBoxItems();
+				labelValor1.setVisible(false);
+				labelValor2.setVisible(false);
+			}
+		});
+		btnLongitudes.setBorderPainted(false);
+		btnLongitudes.setHorizontalAlignment(SwingConstants.LEFT);
+		btnLongitudes.setIcon(new ImageIcon("E:\\JProjects\\conversor\\assets\\regla.png"));
+		btnLongitudes.setMargin(new Insets(2, 5, 2, 0));
+		btnLongitudes.setBounds(0, 99, 123, 50);
+		btnLongitudes.setPreferredSize(new Dimension(102, 23));
+		btnLongitudes.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		panel_1.add(btnLongitudes);
+		
+		labelLogo = new JLabel("");
+		labelLogo.setHorizontalAlignment(SwingConstants.CENTER);
+		labelLogo.setBounds(15, 180, 80, 96);
+		panel_1.add(labelLogo);
+		labelLogo.setIcon(new ImageIcon("E:\\JProjects\\conversor\\assets\\logo-mejorado.png"));
 		frmConversor.setBounds(100, 100, 615, 357);
 		frmConversor.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmConversor.setLocationRelativeTo(null);
@@ -246,18 +242,17 @@ public class ConversorGui {
 		return str.matches("\\d+(\\.\\d+)?");
 	}
 	
-	private void validateAndConvertCurrency(JComboBox comboOrigen, JComboBox comboDestino, JTextField textMonedaOrigen, JTextField textMonedaDestino) {
+	private void validateAndConvertValue(JComboBox comboOrigen, JComboBox comboDestino, JTextField textOrigen, JTextField textDestino) {
 		try {
-			String s = textMonedaOrigen.getText();
+			String s = textOrigen.getText();
 			
 			if(!isNumeric(s) ) {
-				//e.consume();
-				if(textMonedaOrigen.getText().isEmpty())
-					textMonedaDestino.setText("");
+				if(textOrigen.getText().isEmpty())
+					textDestino.setText("");
 			}else {
-				String monedaOrigen = monedas[comboOrigen.getSelectedIndex()].name();
-				String monedaDestino = monedas[comboDestino.getSelectedIndex()].name();
-				textMonedaDestino.setText(cm.convertir(monedaOrigen, monedaDestino, Double.parseDouble(textMonedaOrigen.getText())));
+				String valorOrigen = conversorActual.getValues()[comboOrigen.getSelectedIndex()].name();
+				String valorDestino = conversorActual.getValues()[comboDestino.getSelectedIndex()].name();
+				textDestino.setText(conversorActual.convertir(valorOrigen, valorDestino, Double.parseDouble(textOrigen.getText())));
 			}	
 		} catch (NumberFormatException ex) {
 			// TODO: handle exception
@@ -265,9 +260,30 @@ public class ConversorGui {
 		}
 	}
 	
-	private void setCurrencySymbol(ItemEvent e, JLabel labelDestino, int comboMonedaOrigenIndex) {
-		if(e.getStateChange() == ItemEvent.SELECTED) {
-			labelDestino.setText(monedas[comboMonedaOrigenIndex].getSimbolo());
+	private void setCurrencySymbol(ItemEvent e, JLabel labelDestino, int comboOrigenIndex) {
+		if(e.getStateChange() == ItemEvent.SELECTED && labelValor1.isVisible()) {
+			labelDestino.setText(Moneda.values()[comboOrigenIndex].getSimbolo());
 		}
+	}
+	
+	private void cambiarConversor(Conversor<?> nuevoConversor) {
+        conversorActual = nuevoConversor;
+    }
+	
+	private void setComboBoxItems() {
+		comboValor1.removeAllItems();
+		comboValor2.removeAllItems();
+		for (Enum<?> value : conversorActual.getValues()) {
+			System.out.println(value);
+			comboValor1.addItem(value);
+			comboValor2.addItem(value);
+		}
+		comboValor2.setSelectedIndex(1);
+	}
+	
+	private void setDefaultContent() {
+		textValor1.setText("");
+		textValor2.setText("");
+		textValor1.requestFocus();
 	}
 }

@@ -1,22 +1,23 @@
 package com.conversor;
 
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
 
-public class ConversorMoneda implements Conversor{
-	
+public class ConversorMoneda extends Conversor<Moneda>{
 	
 	public ConversorMoneda() {
-		
 	}
 	
+	@Override
+	public String convertir(String valorOrigen, String valorDestino, double cantidad) {
+		// TODO Auto-generated method stub
+		return new DecimalFormat("##0.0##")
+				.format(cantidad * Moneda.valueOf(valorDestino).getEquivalencia() / Moneda.valueOf(valorOrigen).getEquivalencia());
+	}
 
 	@Override
-	public String convertir(String monedaOrigen, String monedaDestino, double cantidad) {
+	public Moneda[] getValues() {
 		// TODO Auto-generated method stub
-		return new DecimalFormat("#0.00")
-				.format(cantidad * Moneda.valueOf(monedaDestino).getEquivalencia() / Moneda.valueOf(monedaOrigen).getEquivalencia());
+		return Moneda.values();
 	}
 
 }

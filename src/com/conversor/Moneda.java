@@ -31,7 +31,9 @@ public enum Moneda {
 		return simbolo;
 	}
 	
-	public String descripcion() {
-		return this.toString() + " - " + this.getNombreMoneda();
+	@Override
+	public String toString() {
+		return this.name() + " - " + this.getNombreMoneda();
 	}
+
 }

@@ -1,7 +1,6 @@
 package com.conversor;
 
-public interface Conversor {
-	
-	String convertir(String valorOrigen, String valorDestino, double cantidad);
-
+public abstract class Conversor<T extends Enum<T>>{	
+	public abstract String convertir(String valorOrigen, String valorDestino, double cantidad);
+	public abstract T[] getValues();
 }
