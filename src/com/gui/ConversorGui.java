@@ -32,6 +32,7 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.stream.Stream;
 
 public class ConversorGui {
 
